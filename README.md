@@ -72,3 +72,4 @@ Depois abra <http://localhost:5000>.
 4. Na aba *Web*, crie um app *Flask* apontando para o `app.py`.
    Atenção: a conta grátis só acessa sites de uma lista liberada; se alguma API não carregar,
    use o Render.
+s
