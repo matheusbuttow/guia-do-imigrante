@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block titulo %}{{ p.nome }} · Guia do Imigrante{% endblock %}
+
+{# Barra do país (preta) e do Brasil (cinza) para um índice #}
+{% macro barra(nome, fonte, valor, valor_br, maximo, casas=0) %}
+  <div class="barra-item">
+    <span>{{ nome }}<small>{{ fonte }}</small></span>
+    <div class="barra"><i style="width:{{ [valor / maximo * 80, 80] | min }}%"></i>{{ valor | numero(casas) }}</div>
+    <div class="barra barra--br"><i style="width:{{ [valor_br / maximo * 80, 80] | min }}%"></i>{{ valor_br | numero(casas) }} Brasil</div>
+  </div>
+{% endmacro %}
+
+{% block conteudo %}
+{% set s = p.salario_minimo %}
+{% set codigo = p.moeda.codigo %}
+<article class="ficha container">
+  <a class="voltar" href="{{ url_for('inicio', _anchor='paises') }}">← todos os países</a>
+
+  <header class="ficha__cabecalho">
+    <img src="https://flagcdn.com/w160/{{ p.iso2 }}.png" alt="Bandeira de {{ p.nome }}">
+    <div>
+      <h1>{{ p.nome }}</h1>
+      <p>{{ p.capital }} · {{ p.continente }} · {{ p.idiomas | join(', ') }}</p>
+    </div>
+  </header>
+  <p class="resumo">{{ p.resumo }}</p>
+
+  <dl class="dados">
+    <div class="grande">
+      <dt>{% if p.referencia %}Piso de referência em reais{% else %}Salário mínimo em reais{% endif %}</dt>
+      <dd>{{ p.salario_brl | reais }}{% if p.referencia %}*{% endif %}
+        <small>
+          {% if s.valor is none %}
+            O país não tem salário mínimo nacional.
+          {% elif s.periodo == 'hora' %}
+            {{ s.valor | moeda(codigo) }} por hora × {{ horas_mes | numero }} h = {{ p.salario_mensal | moeda(codigo, 0) }} ({{ s.ano_ref }})
+          {% else %}
+            {{ s.valor | moeda(codigo, 0) }} por mês ({{ s.ano_ref }})
+          {% endif %}
+          {{ s.obs or '' }}
+        </small>
+      </dd>
+    </div>
+    <div>
+      <dt>Moeda</dt>
+      <dd>{{ codigo }}
+        <small>{{ p.moeda.nome }}{% if taxa %}{% set qtd = 1000 if 1 / taxa < 0.1 else 1 %} · {{ qtd | numero }} {{ codigo }} = {{ (qtd / taxa) | moeda('BRL') }}{% endif %}</small></dd>
+    </div>
+    <div>
+      <dt>Agora em {{ p.capital }}</dt>
+      {% if clima %}
+        <dd>{{ clima.temperatura | numero }} °C
+          <small>{{ clima.descricao }}, mín {{ clima.minima | numero }}° máx {{ clima.maxima | numero }}° · {{ clima.hora_local }} no horário local</small></dd>
+      {% else %}
+        <dd>–<small>Open-Meteo não respondeu</small></dd>
+      {% endif %}
+    </div>
+    <div>
+      <dt>Em relação ao mínimo do Brasil</dt>
+      <dd>{% if p.salario_brl %}{{ (p.salario_brl / brasil.salario_minimo.valor) | numero(1) }} vezes{% else %}–{% endif %}</dd>
+    </div>
+    <div>
+      <dt>Poder de compra (Brasil = 1)</dt>
+      <dd>{{ p.poder_compra | numero(1) }}{% if p.referencia %}*{% endif %}</dd>
+    </div>
+    <div>
+      <dt>População</dt>
+      <dd>{{ bm.populacao.valor | populacao if bm.populacao else '–' }}</dd>
+    </div>
+  </dl>
+
+  <h2 id="converter">Converter</h2>
+  <form class="conversor" action="{{ url_for('pais', iso3=p.iso3, _anchor='converter') }}" method="get">
+    <label for="valor">R$</label>
+    <input id="valor" name="valor" type="number" min="0" step="any" value="{{ '%g' % valor }}">
+    <button type="submit">Converter</button>
+    {% if convertido is not none %}
+      <output>equivalem a <b>{{ convertido | moeda(codigo) }}</b>
+        {% if pct_minimo %}({{ pct_minimo | numero }}% do salário mínimo local){% endif %}</output>
+    {% else %}
+      <output>cotação indisponível</output>
+    {% endif %}
+  </form>
+
+  <h2>Comparado ao Brasil</h2>
+  <div class="barras">
+    {{ barra('Custo de vida', 'Numbeo, Nova York = 100', p.custo_vida, brasil.custo_vida, 100) }}
+    {{ barra('Segurança', 'Numbeo, 0 a 100', p.seguranca, brasil.seguranca, 100) }}
+    {{ barra('Qualidade de vida', 'Numbeo', p.qualidade_vida, brasil.qualidade_vida, 220) }}
+    {{ barra('IDH', 'PNUD', p.idh, brasil.idh, 1, 3) }}
+  </div>
+
+  <h2>Banco Mundial</h2>
+  <dl class="dados">
+    {% for chave, ind in indicadores.items() if chave != 'populacao' %}
+      {% set d = bm.get(chave) %}
+      {% set d_br = bm_brasil.get(chave) %}
+      <div>
+        <dt>{{ ind.nome }}</dt>
+        <dd>
+          {% if d %}{% if chave == 'pib' %}US$ {{ d.valor | numero }}{% else %}{{ d.valor | numero(1) }} {{ ind.unidade }}{% endif %}{% else %}–{% endif %}
+          <small>{{ d.ano if d else 'sem dado' }} · Brasil:
+            {% if d_br %}{% if chave == 'pib' %}US$ {{ d_br.valor | numero }}{% else %}{{ d_br.valor | numero(1) }} {{ ind.unidade }}{% endif %}{% else %}–{% endif %}
+          </small>
+        </dd>
+      </div>
+    {% endfor %}
+  </dl>
+
+  <div class="colunas">
+    <div>
+      <h2>Caminhos de visto</h2>
+      <ol class="vistos">
+        {% for v in p.vistos %}<li>{{ v }}</li>{% endfor %}
+      </ol>
+    </div>
+    <div class="wiki">
+      <h2>Sobre o país</h2>
+      {% if wiki %}
+        <p>{{ wiki.texto }}</p>
+        {% if wiki.link %}<a href="{{ wiki.link }}" target="_blank" rel="noopener">Continuar lendo na Wikipedia</a>{% endif %}
+      {% else %}
+        <p>Não foi possível carregar o resumo da Wikipedia.</p>
+      {% endif %}
+    </div>
+  </div>
+</article>
+{% endblock %}

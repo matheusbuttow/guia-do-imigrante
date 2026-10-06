@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Página não encontrada · Guia do Imigrante{% endblock %}
+
+{% block conteudo %}
+<section class="secao container">
+  <h1>Página não encontrada</h1>
+  <p class="nota">Esse país ainda não está no guia. <a href="{{ url_for('inicio') }}">Voltar para a lista</a>.</p>
+</section>
+{% endblock %}

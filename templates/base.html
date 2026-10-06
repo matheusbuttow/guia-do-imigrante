@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}Guia do Imigrante{% endblock %}</title>
+  <meta name="description" content="Salário mínimo, custo de vida, segurança, qualidade de vida e moeda dos países mais procurados por brasileiros, convertidos para reais.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topo">
+    <div class="container topo__linha">
+      <a href="{{ url_for('inicio') }}" class="logo">Guia do Imigrante</a>
+      <nav class="menu">
+        <a href="{{ url_for('inicio', _anchor='paises') }}">Países</a>
+        <a href="{{ url_for('inicio', _anchor='mapa') }}">Mapa</a>
+        <a href="{{ url_for('comparar') }}">Comparar</a>
+        <a href="{{ url_for('pagina_quiz') }}">Quiz</a>
+        <a href="{{ url_for('fontes') }}">Fontes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <footer class="rodape container">
+    <p>Guia do Imigrante · trabalho de Aplicações Cliente/Servidor para Web</p>
+  </footer>
+</body>
+</html>

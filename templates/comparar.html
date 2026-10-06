@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}Comparar · Guia do Imigrante{% endblock %}
+
+{% block conteudo %}
+<section class="secao container">
+  <div class="secao__titulo">
+    <h1>Frente a frente</h1>
+    <p>Escolha dois países. O Brasil também está na lista. O melhor valor de cada linha fica sublinhado.</p>
+  </div>
+
+  <form class="comparador__seletores" action="{{ url_for('comparar') }}" method="get">
+    <select name="a" aria-label="Primeiro país" onchange="this.form.submit()">
+      {% for o in opcoes %}<option value="{{ o.iso3 }}" {{ 'selected' if o.iso3 == a.iso3 }}>{{ o.nome }}</option>{% endfor %}
+    </select>
+    <span>contra</span>
+    <select name="b" aria-label="Segundo país" onchange="this.form.submit()">
+      {% for o in opcoes %}<option value="{{ o.iso3 }}" {{ 'selected' if o.iso3 == b.iso3 }}>{{ o.nome }}</option>{% endfor %}
+    </select>
+    <noscript><button type="submit">Comparar</button></noscript>
+  </form>
+
+  <div class="tabela-rolagem">
+    <table class="tabela-comparacao">
+      <thead><tr><th></th><th>{{ a.nome }}</th><th>{{ b.nome }}</th></tr></thead>
+      <tbody>
+        {% for linha in tabela %}
+          <tr>
+            <th scope="row">{{ linha.nome }}</th>
+            <td class="{{ 'vence' if linha.vence_a }}">{{ linha.a }}</td>
+            <td class="{{ 'vence' if linha.vence_b }}">{{ linha.b }}</td>
+          </tr>
+        {% endfor %}
+        <tr><th scope="row">Moeda</th><td class="texto">{{ a.moeda.nome }}</td><td class="texto">{{ b.moeda.nome }}</td></tr>
+        <tr><th scope="row">Idiomas</th><td class="texto">{{ a.idiomas | join(', ') }}</td><td class="texto">{{ b.idiomas | join(', ') }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  {% if a.referencia or b.referencia %}
+    <p class="nota">* País sem salário mínimo em lei: usamos um piso de referência (convenções coletivas ou regras locais).</p>
+  {% endif %}
+</section>
+{% endblock %}

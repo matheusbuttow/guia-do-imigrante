@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titulo %}Quiz · Guia do Imigrante{% endblock %}
+
+{% block conteudo %}
+<section class="secao container">
+  <div class="secao__titulo">
+    <h1>Qual país combina com você?</h1>
+    <p>Responda {{ perguntas | length }} perguntas rápidas. O resultado usa os mesmos dados do guia.</p>
+  </div>
+
+  {% if resultado %}
+    <div class="resultado" id="resultado">
+      <h2>Seus 5 países</h2>
+      <ol>
+        {% for r in resultado %}
+          <li>
+            <div>
+              <h3><a href="{{ url_for('pais', iso3=r.pais.iso3) }}">{{ r.pais.nome }}</a></h3>
+              {% if r.motivos %}{% set texto = r.motivos | join(' · ') %}<p>{{ texto[0] | upper }}{{ texto[1:] }}</p>{% endif %}
+              {% if r.alertas %}<p class="alertas">Atenção: {{ r.alertas | join(' · ') }}</p>{% endif %}
+            </div>
+            <div class="nota-quiz">{{ r.nota }}%<small>compatível</small></div>
+          </li>
+        {% endfor %}
+      </ol>
+      {% if resultado | selectattr('pais.referencia') | list %}
+        <p class="nota">* País sem salário mínimo em lei: usamos um piso de referência (convenções coletivas ou regras locais).</p>
+      {% endif %}
+      <p class="nota">Clique no nome do país para ver a ficha completa. Mude as respostas abaixo para testar outros cenários.</p>
+    </div>
+  {% endif %}
+
+  {% if faltou %}<p class="erro">Responda todas as perguntas para ver o resultado.</p>{% endif %}
+
+  {# GET: as respostas ficam na URL, então dá para compartilhar o resultado #}
+  <form class="quiz" action="{{ url_for('pagina_quiz', _anchor='resultado') }}" method="get" autocomplete="off">
+    {% for chave, texto, opcoes in perguntas %}
+      <fieldset>
+        <legend><span>{{ '%02d' % loop.index }}</span>{{ texto }}</legend>
+        <div class="opcoes">
+          {% for valor, rotulo in opcoes %}
+            <label>
+              <input type="radio" name="{{ chave }}" value="{{ valor }}" required
+                     {{ 'checked' if respostas.get(chave) == valor }}>
+              {{ rotulo }}
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+    {% endfor %}
+    <button type="submit">{{ 'Refazer' if resultado else 'Ver meu resultado' }}</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{# Link de ordenação que mantém o filtro de continente e a busca atuais #}
+{% macro link_ordem(chave) -%}
+  {{ url_for('inicio', ordem=chave, continente=continente, busca=busca, metrica=metrica, _anchor='paises') }}
+{%- endmacro %}
+
+{% block conteudo %}
+  <section class="abertura container">
+    <p class="abertura__edicao">{{ edicao }}</p>
+    <h1>Quanto vale morar fora?</h1>
+    <p class="abertura__texto">
+      {{ total }} países que brasileiros mais pesquisam na hora de imigrar, lado a lado:
+      salário mínimo convertido pelo câmbio do dia, custo de vida, segurança e o que
+      dizem os números do Banco Mundial.
+    </p>
+    <p class="abertura__quiz">Não sabe por onde começar? <a href="{{ url_for('pagina_quiz') }}">Responda o quiz e veja quais países combinam com você.</a></p>
+    <p class="abertura__cambio">{{ cambio or "Câmbio indisponível no momento." }}</p>
+  </section>
+
+  <section id="paises" class="secao container">
+    <div class="secao__titulo">
+      <h2>Os países</h2>
+      <p>Clique no nome de uma coluna para ordenar e no nome de um país para abrir a ficha.</p>
+    </div>
+
+    <div class="filtros">
+      <nav class="abas" aria-label="Filtrar por continente">
+        <a href="{{ url_for('inicio', ordem=ordem, busca=busca, metrica=metrica, _anchor='paises') }}"
+           class="{{ 'ativa' if not continente }}">Todos</a>
+        {% for c in continentes %}
+          <a href="{{ url_for('inicio', continente=c, ordem=ordem, busca=busca, metrica=metrica, _anchor='paises') }}"
+             class="{{ 'ativa' if continente == c }}">{{ c }}</a>
+        {% endfor %}
+      </nav>
+      <form action="{{ url_for('inicio', _anchor='paises') }}" method="get" class="busca">
+        <input type="hidden" name="continente" value="{{ continente }}">
+        <input type="hidden" name="ordem" value="{{ ordem }}">
+        <input type="hidden" name="metrica" value="{{ metrica }}">
+        <input type="search" name="busca" value="{{ busca }}" placeholder="Buscar país" aria-label="Buscar país">
+        <button type="submit">Buscar</button>
+      </form>
+    </div>
+
+    <div class="tabela-rolagem">
+      <table class="tabela-paises">
+        <thead>
+          <tr>
+            {% set colunas = [
+              ('nome', 'País', ''),
+              ('salario_brl', 'Salário mínimo', 'R$ por mês'),
+              ('poder_compra', 'Poder de compra', 'Brasil = 1'),
+              ('custo_vida', 'Custo de vida', 'Nova York = 100'),
+              ('seguranca', 'Segurança', '0 a 100'),
+              ('qualidade_vida', 'Qualidade de vida', 'índice'),
+              ('idh', 'IDH', '')] %}
+            {% for chave, nome, detalhe in colunas %}
+              <th class="{{ 'num' if chave != 'nome' }} {{ 'ordenada' if ordem == chave }}">
+                <a href="{{ link_ordem(chave) }}">{{ nome }}</a>
+                {% if detalhe %}<small>{{ detalhe }}</small>{% endif %}
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in linhas %}
+            {% set s = p.salario_minimo %}
+            <tr>
+              <td>
+                <a class="pais" href="{{ url_for('pais', iso3=p.iso3) }}">
+                  <img src="https://flagcdn.com/w40/{{ p.iso2 }}.png" alt="" loading="lazy">
+                  <div><b>{{ p.nome }}</b><span>{{ p.capital }}</span></div>
+                </a>
+              </td>
+              <td class="num">
+                {{ p.salario_brl | reais }}{% if p.referencia %}<sup>*</sup>{% endif %}
+                <span class="local">
+                  {{ s.valor | moeda(p.moeda.codigo) }}/{{ s.periodo }}{% if p.referencia %} · piso de referência{% endif %}
+                </span>
+              </td>
+              <td class="num {{ 'acima' if p.poder_compra and p.poder_compra > 1 }}">{{ p.poder_compra | numero(1) }}{% if p.referencia %}<sup>*</sup>{% endif %}</td>
+              <td class="num">{{ p.custo_vida }}</td>
+              <td class="num">{{ p.seguranca }}</td>
+              <td class="num">{{ p.qualidade_vida }}</td>
+              <td class="num">{{ p.idh | numero(3) }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="7" class="vazio">Nenhum país encontrado.</td></tr>
+          {% endfor %}
+
+          {# Brasil sempre no fim, como referência #}
+          <tr class="linha-brasil">
+            <td><div class="pais"><img src="https://flagcdn.com/w40/br.png" alt="">
+              <div><b>Brasil</b><span>referência</span></div></div></td>
+            <td class="num">{{ brasil.salario_brl | reais }}</td>
+            <td class="num">1,0</td>
+            <td class="num">{{ brasil.custo_vida }}</td>
+            <td class="num">{{ brasil.seguranca }}</td>
+            <td class="num">{{ brasil.qualidade_vida }}</td>
+            <td class="num">{{ brasil.idh | numero(3) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">
+      * País sem salário mínimo em lei. Usamos um piso de referência: o valor que convenções coletivas
+      ou regras locais costumam garantir para o trabalho de menor salário.<br>
+      Poder de compra: salário mínimo em reais dividido pelo custo de vida, comparado com o mesmo cálculo para o Brasil.
+      Um valor de 2,0 significa que o mínimo local rende o dobro do brasileiro.
+    </p>
+  </section>
+
+  <section id="mapa" class="secao container">
+    <div class="secao__titulo secao__titulo--linha">
+      <div>
+        <h2>No mapa</h2>
+        <p>Quanto mais escuro o ponto, melhor o país no indicador escolhido.</p>
+      </div>
+      <form action="{{ url_for('inicio', _anchor='mapa') }}" method="get" class="rotulo-select">
+        <input type="hidden" name="continente" value="{{ continente }}">
+        <input type="hidden" name="ordem" value="{{ ordem }}">
+        <input type="hidden" name="busca" value="{{ busca }}">
+        <label for="metrica">Indicador</label>
+        <div class="linha-form">
+          <select id="metrica" name="metrica" onchange="this.form.submit()">
+            {% for chave, nome in metricas.items() %}
+              <option value="{{ chave }}" {{ 'selected' if chave == metrica }}>{{ nome }}</option>
+            {% endfor %}
+          </select>
+          <noscript><button type="submit">Mostrar</button></noscript>
+        </div>
+      </form>
+    </div>
+    <iframe class="mapa" src="{{ url_for('mapa', metrica=metrica) }}" title="Mapa dos países"></iframe>
+    <div class="legenda">
+      pior
+      <div class="legenda__escala">
+        {% for t in [0, 0.25, 0.5, 0.75, 1] %}<span style="background:hsl(213, 48%, {{ 86 - t * 62 }}%)"></span>{% endfor %}
+      </div>
+      melhor · branco = sem dado
+    </div>
+  </section>
+{% endblock %}

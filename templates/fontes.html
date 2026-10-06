@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Fontes · Guia do Imigrante{% endblock %}
+
+{% block conteudo %}
+<section class="secao container">
+  <div class="secao__titulo">
+    <h1>Fontes</h1>
+    <p>De onde vem cada número do site.</p>
+  </div>
+  <div class="fontes">
+    <div>
+      <h2>Consultadas pelo servidor</h2>
+      <ul>
+        <li><b>Banco Mundial:</b> PIB per capita, expectativa de vida, homicídios, desemprego, inflação e população.</li>
+        <li><b>ExchangeRate-API:</b> cotação das moedas em reais.</li>
+        <li><b>Open-Meteo:</b> tempo e hora local na capital.</li>
+        <li><b>Wikipedia:</b> resumo de cada país.</li>
+        <li><b>OpenStreetMap:</b> mapa, desenhado com a biblioteca folium.</li>
+      </ul>
+      <p class="status">
+        Agora:
+        {% for nome, ok in status.items() %}{{ nome }} {{ 'ok' if ok else 'falhou' }}{{ ' · ' if not loop.last }}{% endfor %}
+      </p>
+    </div>
+    <div>
+      <h2>Compiladas manualmente</h2>
+      <ul>
+        <li><b>Salário mínimo:</b> legislação de cada país, com o ano de referência.</li>
+        <li><b>IDH:</b> Relatório de Desenvolvimento Humano do PNUD.</li>
+        <li><b>Custo de vida, segurança e qualidade de vida:</b> índices do Numbeo (valores aproximados).</li>
+        <li><b>Vistos:</b> principais rotas usadas por brasileiros.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="nota">
+    Regras de visto e valores mudam com frequência. Use este guia como ponto de partida e
+    confirme sempre nos sites oficiais de imigração.
+  </p>
+</section>
+{% endblock %}
