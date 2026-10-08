@@ -111,7 +111,8 @@ def calcular(respostas, paises):
         # Parte principal: média ponderada dos índices
         nota = sum(pesos[c] * notas[c][iso] for c in pesos) / soma_pesos
         if pesos["salario_brl"] and notas["salario_brl"][iso] >= 0.6 and p["salario_brl"]:
-            motivos.append("salário mínimo alto em reais")
+            # Países sem mínimo em lei usam o piso de referência (marcado com *)
+            motivos.append("piso salarial alto em reais*" if p.get("referencia") else "salário mínimo alto em reais")
         if pesos["custo_vida"] and notas["custo_vida"][iso] >= 0.6:
             motivos.append("custo de vida baixo")
         if pesos["seguranca"] and notas["seguranca"][iso] >= 0.6:

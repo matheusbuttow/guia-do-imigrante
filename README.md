@@ -29,7 +29,8 @@ Wikipedia 24 h, clima 10 min).
 app.py            → rotas do Flask, cálculos e geração do mapa
 apis.py           → requisições às APIs externas + cache
 dados.py          → dados compilados à mão (salário mínimo, índices, vistos)
-templates/        → páginas HTML (Jinja): base, index, pais, comparar, fontes, 404
+quiz.py           → perguntas e cálculo de compatibilidade do quiz
+templates/        → páginas HTML (Jinja): base, index, pais, comparar, quiz, fontes, 404
 static/style.css  → visual
 requirements.txt  → bibliotecas necessárias
 ```
@@ -40,6 +41,7 @@ requirements.txt  → bibliotecas necessárias
 - `/pais/<código>` ficha do país: tempo agora, conversor de moeda, comparação com o Brasil,
   indicadores do Banco Mundial, vistos e resumo da Wikipedia (ex.: `/pais/PRT`)
 - `/comparar?a=PRT&b=CAN` dois países lado a lado
+- `/quiz` "Qual país combina com você?": 8 perguntas e os 5 países mais compatíveis, com os motivos
 - `/fontes` de onde vem cada dado e se as APIs estão respondendo
 - `/mapa?metrica=seguranca` o mapa sozinho (a página inicial o mostra num iframe)
 

@@ -1,0 +1,221 @@
+/* Estilos do Guia do Imigrante.
+   A ideia visual é a de um guia impresso: fundo cor de papel, títulos com serifa,
+   números em fonte monoespaçada e uma única cor de destaque (vermelho de carimbo). */
+
+:root {
+  --papel: #f5f1e8;
+  --papel-escuro: #ece6d8;
+  --tinta: #1c1b19;
+  --tinta-suave: #6a655b;
+  --linha: #d6cebe;
+  --destaque: #a8321f;
+  --azul: #1f3a5f;
+  --serifa: 'Fraunces', Georgia, serif;
+  --texto: 'IBM Plex Sans', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body {
+  font-family: var(--texto);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--tinta);
+  background: var(--papel);
+}
+a { color: var(--destaque); }
+img { display: block; }
+h1, h2, h3 { font-family: var(--serifa); font-weight: 700; line-height: 1.1; }
+input, select, button { font: inherit; color: inherit; }
+
+.container { width: min(1100px, 100% - 32px); margin-inline: auto; }
+
+/* Cabeçalho */
+.topo {
+  position: sticky; top: 0; z-index: 1000;
+  background: var(--papel);
+  border-bottom: 2px solid var(--tinta);
+}
+.topo__linha { display: flex; justify-content: space-between; align-items: baseline; padding: 0.9rem 0; }
+.logo { font-family: var(--serifa); font-size: 1.3rem; font-weight: 700; color: var(--tinta); text-decoration: none; }
+.menu { display: flex; gap: 1.4rem; }
+.menu a { color: var(--tinta); text-decoration: none; font-size: 0.95rem; }
+.menu a:hover { color: var(--destaque); text-decoration: underline; }
+
+/* Abertura */
+.abertura { padding: 3.5rem 0 2.5rem; border-bottom: 1px solid var(--linha); }
+.abertura__edicao {
+  font-family: var(--mono); font-size: 0.8rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--destaque); margin-bottom: 1rem;
+}
+.abertura h1 { font-size: clamp(2.4rem, 7vw, 4.5rem); max-width: 12ch; }
+.abertura__texto { max-width: 58ch; font-size: 1.1rem; margin-top: 1.2rem; }
+.abertura__cambio { font-family: var(--mono); font-size: 0.85rem; color: var(--tinta-suave); margin-top: 1.5rem; }
+
+/* Seções */
+.secao { padding: 3rem 0; border-bottom: 1px solid var(--linha); }
+.secao__titulo { margin-bottom: 1.5rem; }
+.secao__titulo h2, .secao__titulo h1 { font-size: 2rem; }
+.secao__titulo p { color: var(--tinta-suave); margin-top: 0.3rem; }
+.secao__titulo--linha { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+.nota { font-size: 0.85rem; color: var(--tinta-suave); margin-top: 1rem; max-width: 75ch; }
+
+.rotulo-select { display: grid; gap: 0.2rem; font-size: 0.8rem; color: var(--tinta-suave); }
+select, input[type="search"], input[type="number"] {
+  background: #fffdf8; border: 1px solid var(--tinta); border-radius: 2px; padding: 0.45rem 0.6rem;
+}
+select:focus, input:focus, button:focus-visible, tr:focus-visible { outline: 2px solid var(--destaque); outline-offset: 1px; }
+
+/* Filtros */
+.filtros { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.abas { display: flex; flex-wrap: wrap; }
+.abas a {
+  border: 1px solid var(--tinta); margin-right: -1px; color: var(--tinta);
+  padding: 0.35rem 0.8rem; font-size: 0.9rem; text-decoration: none;
+}
+.abas a:hover { background: var(--papel-escuro); }
+.abas a.ativa { background: var(--tinta); color: var(--papel); }
+.busca, .linha-form { display: flex; gap: 0.4rem; }
+.busca input { width: 200px; }
+button {
+  background: var(--tinta); color: var(--papel); border: 1px solid var(--tinta);
+  padding: 0.45rem 0.9rem; cursor: pointer; border-radius: 2px;
+}
+button:hover { background: var(--destaque); border-color: var(--destaque); }
+
+/* Tabelas */
+.tabela-rolagem { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 0.65rem 0.6rem; text-align: left; border-bottom: 1px solid var(--linha); }
+th { font-size: 0.8rem; font-weight: 600; vertical-align: bottom; }
+th small { display: block; font-weight: 400; color: var(--tinta-suave); }
+.num { text-align: right; font-family: var(--mono); }
+th.num { font-family: var(--texto); }
+
+.tabela-paises { min-width: 760px; }
+.tabela-paises thead th { border-bottom: 2px solid var(--tinta); }
+.tabela-paises thead th a { color: inherit; text-decoration: none; }
+.tabela-paises thead th a:hover { color: var(--destaque); text-decoration: underline; }
+.tabela-paises thead th.ordenada { color: var(--destaque); }
+.tabela-paises thead th.ordenada::after { content: ' ↓'; }
+.tabela-paises tbody tr:hover { background: var(--papel-escuro); }
+.tabela-paises td { font-size: 0.95rem; }
+
+.pais { display: flex; align-items: center; gap: 0.7rem; color: inherit; text-decoration: none; }
+a.pais:hover b { color: var(--destaque); text-decoration: underline; }
+.pais img { width: 28px; height: 19px; object-fit: cover; border: 1px solid var(--linha); }
+.pais b { font-weight: 600; }
+.pais span { display: block; font-size: 0.8rem; color: var(--tinta-suave); }
+.local { display: block; font-size: 0.75rem; color: var(--tinta-suave); }
+.acima { color: var(--azul); font-weight: 500; }
+.tabela-paises tbody tr.linha-brasil { background: none; color: var(--tinta-suave); }
+.tabela-paises tbody tr.linha-brasil td { border-top: 2px solid var(--tinta); border-bottom: 0; }
+.vazio { color: var(--tinta-suave); padding: 1.5rem 0.6rem; }
+
+/* Mapa */
+iframe.mapa { display: block; width: 100%; height: 440px; border: 1px solid var(--tinta); background: #dfe6e8; }
+.legenda { display: flex; align-items: center; gap: 0.7rem; margin-top: 0.6rem; font-family: var(--mono); font-size: 0.8rem; }
+.legenda__escala { display: flex; }
+.legenda__escala span { width: 28px; height: 10px; }
+
+/* Comparador */
+.comparador__seletores { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.comparador__seletores select { min-width: 200px; }
+.comparador__seletores span { font-family: var(--serifa); font-style: italic; }
+.tabela-comparacao { min-width: 480px; }
+.tabela-comparacao thead th { font-family: var(--serifa); font-size: 1.15rem; border-bottom: 2px solid var(--tinta); }
+.tabela-comparacao tbody th { font-weight: 400; font-size: 0.9rem; color: var(--tinta-suave); width: 40%; }
+.tabela-comparacao td { font-family: var(--mono); font-size: 0.95rem; }
+.tabela-comparacao td.texto { font-family: var(--texto); }
+.tabela-comparacao td.vence { color: var(--destaque); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Fontes */
+.fontes { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+.fontes h2 { font-size: 1.15rem; margin-bottom: 0.6rem; }
+.fontes ul { padding-left: 1.1rem; display: grid; gap: 0.35rem; font-size: 0.95rem; }
+.status { font-family: var(--mono); font-size: 0.8rem; color: var(--tinta-suave); margin-top: 0.8rem; }
+
+.rodape { padding: 2rem 0 3rem; font-size: 0.85rem; color: var(--tinta-suave); }
+
+/* Página do país */
+.ficha { padding: 2rem 0 3rem; }
+.voltar { display: inline-block; font-size: 0.9rem; margin-bottom: 1.2rem; color: var(--tinta-suave); }
+.ficha__cabecalho { display: flex; align-items: center; gap: 1rem; padding-bottom: 1.2rem; border-bottom: 2px solid var(--tinta); }
+.ficha__cabecalho img { width: 64px; border: 1px solid var(--linha); }
+.ficha__cabecalho h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
+.ficha__cabecalho p { color: var(--tinta-suave); }
+.ficha h2 { font-size: 1.4rem; margin: 2.2rem 0 0.8rem; }
+.ficha .resumo { font-family: var(--serifa); font-size: 1.15rem; font-style: italic; margin-top: 1.2rem; }
+
+/* Lista de dados "rótulo: valor" usada na ficha */
+.dados { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--linha); margin-top: 1.2rem; }
+.dados div { padding: 0.8rem 1rem 0.8rem 0; border-bottom: 1px solid var(--linha); }
+.dados dt { font-size: 0.8rem; color: var(--tinta-suave); }
+.dados dd { font-family: var(--mono); font-size: 1.1rem; }
+.dados dd small { display: block; font-family: var(--texto); font-size: 0.78rem; color: var(--tinta-suave); }
+.dados .grande dd { font-size: 1.6rem; color: var(--destaque); }
+
+.conversor { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; font-size: 0.95rem; }
+.conversor input { width: 120px; font-family: var(--mono); }
+.conversor output { font-family: var(--mono); }
+.conversor output b { font-size: 1.15rem; }
+
+/* Barras de comparação com o Brasil */
+.barras { display: grid; gap: 0.9rem; }
+.barra-item { display: grid; grid-template-columns: 150px 1fr; gap: 0.3rem 1rem; align-items: center; font-size: 0.9rem; }
+.barra-item > span { grid-row: span 2; }
+.barra-item small { color: var(--tinta-suave); display: block; font-size: 0.75rem; }
+.barra { display: flex; align-items: center; gap: 0.5rem; font-family: var(--mono); font-size: 0.8rem; }
+.barra i { height: 10px; background: var(--tinta); }
+.barra--br i { background: #b3ab9b; }
+.barra--br { color: var(--tinta-suave); }
+
+.colunas { display: grid; grid-template-columns: 1fr 1.3fr; gap: 2.5rem; }
+.vistos { padding-left: 1.2rem; display: grid; gap: 0.4rem; }
+.wiki p { font-size: 0.95rem; margin-bottom: 0.5rem; }
+
+/* Quiz */
+.abertura__quiz { margin-top: 1.2rem; font-size: 1.05rem; }
+.quiz { display: grid; gap: 1.4rem; max-width: 760px; }
+.quiz fieldset { border: 0; border-top: 1px solid var(--linha); padding-top: 1rem; }
+.quiz legend { font-family: var(--serifa); font-weight: 700; font-size: 1.2rem; margin-bottom: 0.6rem; padding-right: 0.5rem; }
+.quiz legend span { font-family: var(--mono); font-size: 0.8rem; color: var(--destaque); margin-right: 0.5rem; }
+.opcoes { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.opcoes label { border: 1px solid var(--tinta); padding: 0.4rem 0.8rem; cursor: pointer; font-size: 0.95rem; }
+.opcoes input { position: absolute; opacity: 0; }
+.opcoes label:has(input:checked) { background: var(--tinta); color: var(--papel); }
+.opcoes label:has(input:focus-visible) { outline: 2px solid var(--destaque); outline-offset: 1px; }
+.quiz button { justify-self: start; font-size: 1rem; padding: 0.6rem 1.4rem; }
+.erro { color: var(--destaque); }
+
+.resultado { margin-bottom: 3rem; }
+.resultado ol { list-style: none; counter-reset: pos; }
+.resultado li { counter-increment: pos; display: grid; grid-template-columns: 3rem 1fr auto; gap: 0.3rem 1rem;
+                align-items: start; padding: 1rem 0; border-bottom: 1px solid var(--linha); }
+.resultado li::before { content: counter(pos) "º"; font-family: var(--serifa); font-size: 1.8rem; font-weight: 700; color: var(--destaque); }
+.resultado h3 { font-size: 1.4rem; }
+.resultado h3 a { color: var(--tinta); }
+.resultado .nota-quiz { font-family: var(--mono); font-size: 1.4rem; text-align: right; }
+.resultado .nota-quiz small { display: block; font-size: 0.75rem; color: var(--tinta-suave); }
+.resultado p { font-size: 0.92rem; }
+.resultado .alertas { color: var(--tinta-suave); }
+
+/* Telas menores */
+@media (max-width: 760px) {
+  .menu { gap: 0.9rem; }
+  .menu a[href="#fontes"] { display: none; }
+  .dados { grid-template-columns: 1fr 1fr; }
+  .colunas, .fontes { grid-template-columns: 1fr; gap: 1rem; }
+  .busca { width: 100%; }
+  .busca input { flex: 1; width: auto; }
+  iframe.mapa { height: 360px; }
+  .barra-item { grid-template-columns: 1fr; }
+  .barra-item > span { grid-row: auto; }
+  /* primeira coluna da tabela fica fixa ao rolar para o lado */
+  .tabela-paises td:first-child, .tabela-paises th:first-child { position: sticky; left: 0; background: var(--papel); }
+}
+@media (max-width: 440px) {
+  .menu { display: none; }
+  .dados { grid-template-columns: 1fr; }
+}
