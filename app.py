@@ -319,6 +319,16 @@ def fontes():
     return render_template("fontes.html", status=status)
 
 
+@app.route("/saude")
+def saude():
+    """Verificação de saúde: responde rápido, sem consultar nenhuma API externa.
+
+    O Worker da pasta failover/ e os monitores de disponibilidade usam esta rota
+    para saber se este servidor está de pé.
+    """
+    return {"status": "ok", "paises": len(PAISES)}
+
+
 @app.errorhandler(404)
 def nao_encontrado(_):
     return render_template("404.html"), 404

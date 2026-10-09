@@ -1,0 +1,15 @@
+# Arquivos temporários do Python
+__pycache__/
+*.pyc
+
+# Ambientes virtuais
+venv/
+.venv/
+
+# Configuração local de ferramentas e editores
+.claude/
+.vscode/
+.idea/
+
+# Variáveis de ambiente (nunca enviar chaves ou senhas)
+.env

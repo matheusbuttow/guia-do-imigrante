@@ -74,4 +74,28 @@ Depois abra <http://localhost:5000>.
 4. Na aba *Web*, crie um app *Flask* apontando para o `app.py`.
    Atenção: a conta grátis só acessa sites de uma lista liberada; se alguma API não carregar,
    use o Render.
-s
+
+## Alta disponibilidade (dois servidores)
+
+O site pode rodar em dois servidores ao mesmo tempo, com um "porteiro" na frente que
+passa a visita para o reserva quando o principal não responde.
+
+```
+visitante → Cloudflare Worker (failover/worker.js) → Render   (principal)
+                                                   ↘ Vercel   (reserva)
+```
+
+1. **Principal:** publique no Render, como explicado acima.
+2. **Reserva:** em <https://vercel.com>, entre com o GitHub, clique em *Add New → Project* e
+   importe o mesmo repositório. O arquivo `vercel.json` já diz à Vercel como rodar o Flask.
+3. **Porteiro:** em <https://dash.cloudflare.com>, vá em *Workers & Pages → Create → Worker*,
+   cole o conteúdo de `failover/worker.js`, troque os dois endereços no começo do arquivo
+   pelos seus e clique em *Deploy*. O endereço para divulgar é o do Worker
+   (`https://NOME.SEU-USUARIO.workers.dev`).
+
+Para conferir qual servidor respondeu, abra as ferramentas do navegador (F12 → Rede) e veja
+o cabeçalho `X-Servidor` da resposta.
+
+Outras proteções já incluídas no código:
+- `/saude` responde sem consultar APIs externas; serve para monitores como o UptimeRobot.
+- Se uma API externa cair, o site mostra o último valor que tinha guardado em vez de falhar.

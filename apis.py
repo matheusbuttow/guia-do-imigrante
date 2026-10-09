@@ -29,11 +29,20 @@ _cache = {}
 
 
 def _com_cache(chave, validade, funcao):
-    """Devolve o valor guardado se ainda for válido; senão chama a função e guarda."""
+    """Devolve o valor guardado se ainda for válido; senão chama a função e guarda.
+
+    Se a API estiver fora do ar e existir um valor antigo guardado, devolve o
+    antigo em vez de falhar: é melhor mostrar o câmbio de uma hora atrás do que nada.
+    """
     agora = time.time()
     if chave in _cache and agora - _cache[chave][0] < validade:
         return _cache[chave][1]
-    valor = funcao()
+    try:
+        valor = funcao()
+    except (requests.RequestException, KeyError, ValueError):
+        if chave in _cache:
+            return _cache[chave][1]
+        raise
     _cache[chave] = (agora, valor)
     return valor
 
